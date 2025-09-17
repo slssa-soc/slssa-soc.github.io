@@ -8,9 +8,9 @@ layout: lesson-content
   <p>The latest Harmful Algal Bloom (HAB) information for patrol, training, and competition activities is available on the 
   <a href="https://www.surflifesavingsa.com.au/algal-bloom" target="_blank" style="color: blue; text-decoration: underline;">SLSSA HAB Information Page</a>.
   </p>
-  <p>[SOP 8.11 Adverse Weather and Environmental Conditions ("Inclement Weather")](./8-patrol-operations-general/8.11-adverse-weather-and-environmental-conditions.md) details the procedure for impacts caused by the HAB.</p>
+  <p><a href="https://sops.surflifesavingsa.com.au/8-patrol-operations-general/8.11-adverse-weather-and-environmental-conditions.html" target="_blank" style="color: blue; text-decoration: underline;">SOP 8.11 Adverse Weather and Environmental Conditions ("Inclement Weather")</a> details the procedure for impacts caused by the HAB.</p>
 </div>
-
+<br>
 Welcome to the Surf Life Saving SA (SLSSA) Standard Operating Procedures (SOPs). This document serves as the cornerstone of our operational framework, outlining essential protocols and best practices designed to ensure the safety and efficiency of our Surf Life Saving operations. The SOPs provide a structured approach to managing both routine and emergency situations and are vital for maintaining the high standards of safety, professionalism, and preparedness that are central to our mission.
 
 SLSSA is dedicated to protecting lives on South Australia’s beaches through a combination of preventative actions and emergency response services. As an organisation, we recognise that the dynamic nature of the ocean and the varied conditions we encounter require a flexible yet standardised approach to our operations. The procedures outlined in this manual are based on current best practices, legal requirements, and the latest research, ensuring that our volunteers and staff are equipped with the knowledge and skills needed to respond effectively to any situation.
