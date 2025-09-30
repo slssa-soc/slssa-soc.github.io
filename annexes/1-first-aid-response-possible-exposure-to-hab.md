@@ -6,10 +6,35 @@ layout: lesson-content
 #topics: GitHub; Optional Software
 ---
 
-<div style="display: flex; flex-wrap: wrap;">
+<style>
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .main {
+    flex: 2;
+    min-width: 60%;
+    padding-right: 20px;
+  }
+  .sidebar {
+    flex: 1;
+    min-width: 30%;
+  }
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+    }
+    .main, .sidebar {
+      min-width: 100%;
+      padding-right: 0;
+    }
+  }
+</style>
 
-  <!-- Main content area (2/3 width) -->
-  <div style="flex: 2; min-width: 60%; padding-right: 20px;">
+<div class="container">
+
+  <!-- Main content area -->
+  <div class="main">
 
   ## Health Impacts of Exposure
 
@@ -25,7 +50,6 @@ layout: lesson-content
   with minimal intervention. There is currently no credible evidence that the current Karenia blooms  
   in South Australia cause long-term health effects in otherwise healthy people.
 
-  <!-- Red box (between Health Impacts and Risk Factors) -->
   <div style="background-color: #ffcccc; border: 2px solid red; padding: 20px; margin: 20px 0;">
     <h3 style="color: red; margin-top: 0;">Higher-risk groups</h3>
     <p>People with known asthma, emphysema, bronchitis, or other form of chronic lung disease may be more vulnerable to the respiratory effects of biotoxins and 
@@ -46,85 +70,80 @@ layout: lesson-content
 
   </div>
 
-  <!-- Sidebar content area (1/3 width) -->
-  <div style="flex: 1; min-width: 30%;">
+  <!-- Sidebar area -->
+  <div class="sidebar">
 
-    <!-- Blue Box: Immediate Response -->
-    <div style="background-color: #cce5ff; border: 2px solid #3399ff; padding: 20px; margin-bottom: 20px;">
-      <h3 style="color: #005cbf; margin-top: 0;">Immediate Response</h3>
-      <ol>
-        <li><strong>Remove from exposure</strong><br>
-        - Move the person away from affected water or airborne irritants (i.e away 
-        from the beach area or indoors).<br>
-        - Once away from the exposure area, encourage slow, steady breathing.<br>
-        -Remove any clothing contaminated with water, aerosols or foam, taking 
-        care to avoid contact with the irritant and wash exposed areas in fresh
-        water. Put any contaminated clothing through a standard laundry cycle</li><br>
-        
-        <li><strong>Flush skin and eyes</strong><br>
-        - Rinse thoroughly with plenty of fresh water.<br>
-        - Continue flushing until irritation eases.</li>
-      </ol>
-    </div>
+  <div style="background-color: #cce5ff; border: 2px solid #3399ff; padding: 20px; margin-bottom: 20px;">
+    <h3 style="color: #005cbf; margin-top: 0;">Immediate Response</h3>
+    <ol>
+      <li><strong>Remove from exposure</strong><br>
+      - Move the person away from affected water or airborne irritants (i.e away 
+      from the beach area or indoors).<br>
+      - Once away from the exposure area, encourage slow, steady breathing.<br>
+      -Remove any clothing contaminated with water, aerosols or foam, taking 
+      care to avoid contact with the irritant and wash exposed areas in fresh
+      water. Put any contaminated clothing through a standard laundry cycle</li><br>
+      
+      <li><strong>Flush skin and eyes</strong><br>
+      - Rinse thoroughly with plenty of fresh water.<br>
+      - Continue flushing until irritation eases.</li>
+    </ol>
+  </div>
 
-    <!-- Blue Box: Breathing Support -->
-    <div style="background-color: #cce5ff; border: 2px solid #3399ff; padding: 20px; margin-bottom: 20px;">
-      <h3 style="color: #005cbf; margin-top: 0;">Breathing Support</h3>
-      <ul>
-        <li>If the person has asthma or breathing difficulties, assist them with 
-        their reliever inhaler as directed.</li>
-        <li>Follow the First Aid Emergency Asthma Plan.</li>
-        <li>Use a spacer if available.</li>
-        <li>Call an ambulance (000) immediately if symptoms worsen after using 
-        a reliever or are severe at any time.</li>
-      </ul>
-    </div>
+  <div style="background-color: #cce5ff; border: 2px solid #3399ff; padding: 20px; margin-bottom: 20px;">
+    <h3 style="color: #005cbf; margin-top: 0;">Breathing Support</h3>
+    <ul>
+      <li>If the person has asthma or breathing difficulties, assist them with 
+      their reliever inhaler as directed.</li>
+      <li>Follow the First Aid Emergency Asthma Plan.</li>
+      <li>Use a spacer if available.</li>
+      <li>Call an ambulance (000) immediately if symptoms worsen after using 
+      a reliever or are severe at any time.</li>
+    </ul>
+  </div>
 
-    <!-- Blue Box: Monitoring -->
-    <div style="background-color: #cce5ff; border: 2px solid #3399ff; padding: 20px; margin-bottom: 20px;">
-      <h3 style="color: #005cbf; margin-top: 0;">Monitoring</h3>
-      <ul>
-        <li><strong>Mild symptoms</strong> (skin irritation, mild eye redness, slight cough): 
-        continue to monitor until symptoms settle.</li>
-        <li><strong>Severe symptoms</strong> (worsening breathing difficulty, swelling, ongoing 
-        distress): call 000 immediately and provide first aid until help arrives.</li>
-      </ul>
-    </div>
+  <div style="background-color: #cce5ff; border: 2px solid #3399ff; padding: 20px; margin-bottom: 20px;">
+    <h3 style="color: #005cbf; margin-top: 0;">Monitoring</h3>
+    <ul>
+      <li><strong>Mild symptoms</strong> (skin irritation, mild eye redness, slight cough): 
+      continue to monitor until symptoms settle.</li>
+      <li><strong>Severe symptoms</strong> (worsening breathing difficulty, swelling, ongoing 
+      distress): call 000 immediately and provide first aid until help arrives.</li>
+    </ul>
+  </div>
 
-    <!-- Blue Box: Follow-up -->
-    <div style="background-color: #cce5ff; border: 2px solid #3399ff; padding: 20px; margin-bottom: 20px;">
-      <h3 style="color: #005cbf; margin-top: 0;">Follow-up</h3>
-      <ul>
-        <li>Monitor symptoms: advise them to monitor for 24–48 hours, as 
-        effects may persist for up to 48 hours. If they are not improving after
-        then or they have severe symptoms then seek medical attention.</li>
-        <li>Report in Ops App (new incident report):  
-          <ul>
-            <li>Record suspected exposures under Other Contributing Factors 
-            → Other.</li>
-            <li>In the incident description, note: “possible exposure to harmful 
-            algal bloom (HAB)” and describe observed impacts.</li>
-          </ul>
-        </li>
-      </ul>
-    </div>
+  <div style="background-color: #cce5ff; border: 2px solid #3399ff; padding: 20px; margin-bottom: 20px;">
+    <h3 style="color: #005cbf; margin-top: 0;">Follow-up</h3>
+    <ul>
+      <li>Monitor symptoms: advise them to monitor for 24–48 hours, as 
+      effects may persist for up to 48 hours. If they are not improving after
+      then or they have severe symptoms then seek medical attention.</li>
+      <li>Report in Ops App (new incident report):  
+        <ul>
+          <li>Record suspected exposures under Other Contributing Factors 
+          → Other.</li>
+          <li>In the incident description, note: “possible exposure to harmful 
+          algal bloom (HAB)” and describe observed impacts.</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
 
-    <!-- Red Box: Severe Asthma Symptoms -->
-    <div style="background-color: #ffcccc; border: 2px solid red; padding: 20px;">
-      <h3 style="color: red; margin-top: 0;">Severe Asthma Symptoms</h3>
-      <ul>
-        <li>Gasping for breath (with or without  wheeze)</li>
-        <li>Unable to speak more than one or  two words per breath</li>
-        <li>Intense chest tightness</li>
-        <li>‘Sucking in’ of throat or rib  muscles, using shoulder muscles, or bracing with arms to breathe</li>
-        <li>Bluish colour around the lips</li>
-        <li>Pale, sweaty skin</li>
-        <li>Marked distress or anxiety</li>
-        <li>Reduced level of consciousness</li>
-        <li>Little or no relief after reliever medication</li>
-        <li>Rapidly worsening symptoms</li>
-      </ul>
-    </div>
+  <div style="background-color: #ffcccc; border: 2px solid red; padding: 20px;">
+    <h3 style="color: red; margin-top: 0;">Severe Asthma Symptoms</h3>
+    <ul>
+      <li>Gasping for breath (with or without  wheeze)</li>
+      <li>Unable to speak more than one or  two words per breath</li>
+      <li>Intense chest tightness</li>
+      <li>‘Sucking in’ of throat or rib  muscles, using shoulder muscles, or bracing with arms to breathe</li>
+      <li>Bluish colour around the lips</li>
+      <li>Pale, sweaty skin</li>
+      <li>Marked distress or anxiety</li>
+      <li>Reduced level of consciousness</li>
+      <li>Little or no relief after reliever medication</li>
+      <li>Rapidly worsening symptoms</li>
+    </ul>
+  </div>
 
   </div>
 </div>
