@@ -41,32 +41,39 @@ layout: lesson-content
   <!-- Main content area -->
   <div class="main">
 
-  ## Health Impacts of Exposure
+    <h2>Health Impacts of Exposure</h2>
 
-  According to SA Health, exposure to algal fragments or biotoxins through spray, or foam from HABs — particularly species of the *Karenia* genus — can cause short-term, transient effects in humans.  
-  Common impacts include:  
-  - Skin irritation: rash, itchiness, stinging, or burning sensation.  
-  - Eye irritation: redness, watering, discomfort.  
-  - Respiratory symptoms: coughing, throat irritation, shortness of breath — particularly in windy conditions or when aerosolised particles or foam are present.  
-
-  For most healthy individuals, symptoms resolve within a few hours after leaving the affected area, with minimal intervention.  
-  There is currently no credible evidence that the current *Karenia* blooms in South Australia cause long-term health effects in otherwise healthy people.
-
-  <div style="background-color: #ffcccc; border: 2px solid red; padding: 20px; margin: 20px 0;">
-    <h3 style="color: red; margin-top: 0;">Higher-risk groups</h3>
     <p>
-      People with known asthma, emphysema, bronchitis, or other form of chronic lung disease may be more vulnerable to the respiratory effects of biotoxins and should avoid areas where there is discoloured or foamy water, particularly if there is an onshore breeze.
+      According to SA Health, exposure to algal fragments or biotoxins through spray, or foam from HABs — particularly species of the <em>Karenia</em> genus — can cause short-term, transient effects in humans.
     </p>
-  </div>
 
-  ## Risk Factors for Exposure
+    <p>Common impacts include:</p>
+    <ul>
+      <li>Skin irritation: rash, itchiness, stinging, or burning sensation.</li>
+      <li>Eye irritation: redness, watering, discomfort.</li>
+      <li>Respiratory symptoms: coughing, throat irritation, shortness of breath — particularly in windy conditions or when aerosolised particles or foam are present.</li>
+    </ul>
 
-  Exposure or symptom severity is more likely under the following conditions:  
-  - Presence of discoloured water, foam, or visible surface blooms.  
-  - Windy conditions (especially onshore winds) or surf spray that can aerosolise algal particles or toxins.  
-  - Walking on beaches with foam or near the shoreline where wave action tosses up algae or foam.  
-  - Swimming in, or immersing in, affected water.  
-  - Consuming wild caught bivalve molluscs (like oysters, cockles, mussels, pipis, scallops) or abalone from areas affected by blooms which may cause nausea and diarrhoea.
+    <p>
+      For most healthy individuals, symptoms resolve within a few hours after leaving the affected area, with minimal intervention. There is currently no credible evidence that the current <em>Karenia</em> blooms in South Australia cause long-term health effects in otherwise healthy people.
+    </p>
+
+    <div style="background-color: #ffcccc; border: 2px solid red; padding: 20px; margin: 20px 0;">
+      <h3 style="color: red; margin-top: 0;">Higher-risk groups</h3>
+      <p>
+        People with known asthma, emphysema, bronchitis, or other form of chronic lung disease may be more vulnerable to the respiratory effects of biotoxins and should avoid areas where there is discoloured or foamy water, particularly if there is an onshore breeze.
+      </p>
+    </div>
+
+    <h2>Risk Factors for Exposure</h2>
+
+    <ul>
+      <li>Presence of discoloured water, foam, or visible surface blooms.</li>
+      <li>Windy conditions (especially onshore winds) or surf spray that can aerosolise algal particles or toxins.</li>
+      <li>Walking on beaches with foam or near the shoreline where wave action tosses up algae or foam.</li>
+      <li>Swimming in, or immersing in, affected water.</li>
+      <li>Consuming wild caught bivalve molluscs (like oysters, cockles, mussels, pipis, scallops) or abalone from areas affected by blooms which may cause nausea and diarrhoea.</li>
+    </ul>
 
   </div>
 
@@ -78,7 +85,7 @@ layout: lesson-content
       <ol>
         <li>
           <strong>Remove from exposure</strong><br>
-          - Move the person away from affected water or airborne irritants (i.e away from the beach area or indoors).<br>
+          - Move the person away from affected water or airborne irritants (i.e. away from the beach area or indoors).<br>
           - Once away from the exposure area, encourage slow, steady breathing.<br>
           - Remove any clothing contaminated with water, aerosols or foam, taking care to avoid contact with the irritant and wash exposed areas in fresh water. Put any contaminated clothing through a standard laundry cycle.
         </li><br>
@@ -142,3 +149,4 @@ layout: lesson-content
 
   </div>
 </div>
+
