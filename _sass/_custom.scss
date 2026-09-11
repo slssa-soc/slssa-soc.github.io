@@ -2,23 +2,551 @@
 
 /* Basic table styling */
 table {
-    border-collapse: collapse !important; /* Ensure borders are collapsed into a single line */
-    width: 100% !important; /* Optional: makes the table width 100% of its container */
+  border-collapse: collapse !important;
+  width: 100% !important;
+}
+
+/* Styling table borders */
+table,
+th,
+td {
+  border: 1px solid #dddddd !important;
+}
+
+/* Optional: Styling table headers */
+th {
+  background-color: #f2f2f2 !important;
+  padding: 8px !important;
+}
+
+/* Optional: Styling table cells */
+td {
+  padding: 8px !important;
+}
+
+/* Sidebar section heading alignment */
+.side-bar-item {
+  width: 100%;
+  text-align: left;
+}
+
+button.side-bar-item.btn-toggle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  white-space: normal;
+  line-height: 1.35;
+}
+
+button.side-bar-item.btn-toggle::after {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+
+/* Sidebar icons */
+.sidebar-label {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.sidebar-icon {
+  width: 1.15rem;
+  min-width: 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  margin-top: 0.12rem;
+}
+
+.sidebar-icon .bi,
+.sidebar-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.sidebar-text {
+  min-width: 0;
+}
+
+.nav-active .sidebar-icon,
+.side-bar-item:hover .sidebar-icon,
+.side-bar-item:focus .sidebar-icon {
+  color: #0161AA;
+}
+
+/* Sidebar divider between main pages and SOP sections */
+.sidebar-divider {
+  height: 1px;
+  margin: 0.75rem 0.5rem;
+  background: #d9e2ec;
+  list-style: none;
+}
+
+/* SOP title action buttons */
+.sop-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sop-title-row h1 {
+  margin-bottom: 0;
+}
+
+.sop-page-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 0.1rem;
+}
+
+/* SOP QR generator buttons */
+.sop-qr-primary-btn,
+.sop-qr-secondary-btn,
+.sop-qr-outline-btn,
+.sop-qr-style-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.sop-qr-primary-btn {
+  border: 1px solid #01538f;
+  background: #0161AA;
+  color: #ffffff !important;
+}
+
+.sop-qr-primary-btn:hover {
+  background: #01538f;
+}
+
+.sop-qr-outline-btn {
+  border: 1px solid #9fc5e8;
+  background: transparent;
+  color: #0161AA !important;
+}
+
+.sop-qr-outline-btn:hover {
+  border-color: #0161AA;
+  background: #f4f9ff;
+}
+
+.sop-qr-secondary-btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0161AA !important;
+}
+
+.sop-qr-secondary-btn:hover {
+  border-color: #0161AA;
+}
+
+/* Modal */
+body.sop-qr-modal-open {
+  overflow: hidden;
+}
+
+.sop-qr-modal[hidden] {
+  display: none !important;
+}
+
+.sop-qr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.sop-qr-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.52);
+}
+
+.sop-qr-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 760px);
+  max-height: min(90vh, 920px);
+  overflow-y: auto;
+  border: 1px solid #d9e2ec;
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
+  padding: 1.5rem;
+}
+
+.sop-qr-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.sop-qr-modal-kicker {
+  margin: 0 0 0.25rem;
+  color: #0161AA;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sop-qr-modal-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.55rem;
+  letter-spacing: -0.02em;
+}
+
+.sop-qr-close-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #d9e2ec;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sop-qr-close-btn:hover {
+  background: #f8fafc;
+}
+
+.sop-qr-modal-intro {
+  margin: 0 0 1.25rem;
+  color: #475569;
+  line-height: 1.55;
+}
+
+/* Style selection cards */
+.sop-qr-style-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.sop-qr-style-btn {
+  display: block;
+  min-height: 118px;
+  padding: 1rem;
+  border: 1px solid #d9e2ec;
+  border-radius: 22px;
+  background: #f8fafc;
+  color: #334155;
+  text-align: left;
+}
+
+.sop-qr-style-btn:hover,
+.sop-qr-style-active {
+  border-color: #0161AA;
+  background: #f4f9ff;
+}
+
+.sop-qr-style-title {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.sop-qr-style-desc {
+  display: block;
+  color: #64748b;
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.sop-qr-output {
+  margin-top: 1.5rem;
+}
+
+#sop-qr-canvas {
+  display: block;
+  width: min(100%, 360px);
+  height: auto;
+  margin: 0 auto 1rem;
+  border-radius: 20px;
+  background-image:
+    linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
+    linear-gradient(-45deg, #f1f5f9 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #f1f5f9 75%),
+    linear-gradient(-45deg, transparent 75%, #f1f5f9 75%);
+  background-size: 24px 24px;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+}
+
+.sop-qr-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.sop-qr-info-box {
+  max-width: 620px;
+  margin: 0.85rem auto 0;
+  padding: 1rem 1.15rem;
+  border: 1px solid #d9e2ec;
+  border-radius: 20px;
+  background: #f8fafc;
+}
+
+.sop-qr-info-box p {
+  margin: 0;
+  color: #475569;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  .sop-title-row {
+    display: block;
   }
-  
-  /* Styling table borders */
-  table, th, td {
-    border: 1px solid #dddddd !important; /* Change the border color and width as needed */
+
+  .sop-title-row h1 {
+    margin-bottom: 1rem;
   }
-  
-  /* Optional: Styling table headers */
-  th {
-    background-color: #f2f2f2 !important; /* Change background color for headers */
-    padding: 8px !important; /* Adjust padding for headers */
+
+  .sop-page-actions {
+    justify-content: flex-start;
+    margin-bottom: 1rem;
   }
-  
-  /* Optional: Styling table cells */
-  td {
-    padding: 8px !important; /* Adjust padding for cells */
+
+  .sop-qr-style-buttons {
+    grid-template-columns: 1fr;
   }
-  
+}
+
+@media (max-width: 640px) {
+  .sop-page-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sop-qr-primary-btn,
+  .sop-qr-secondary-btn,
+  .sop-qr-outline-btn,
+  .sop-qr-style-btn {
+    width: 100%;
+  }
+
+  .sop-qr-modal {
+    padding: 0.75rem;
+  }
+
+  .sop-qr-modal-card {
+    border-radius: 22px;
+    padding: 1.2rem;
+  }
+}
+
+/* Print version-control notice */
+#print-version-control-notice {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 16mm;
+  }
+
+  #breadcrumb-header,
+  #wrapper,
+  header,
+  footer {
+    display: none !important;
+  }
+
+  html,
+  body {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  #print-version-control-notice {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  #print-version-control-notice * {
+    visibility: visible !important;
+    box-sizing: border-box;
+  }
+
+  .print-notice-card {
+    max-width: 170mm;
+    margin: 0 auto;
+    padding: 6mm 0 0;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .print-logo-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 6mm;
+  }
+
+  .print-logo {
+    width: 22mm;
+    height: 22mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .print-logo svg {
+    max-width: 22mm;
+    max-height: 22mm;
+  }
+
+  .print-notice-kicker {
+    display: inline-block;
+    margin: 0 0 5mm;
+    padding: 2.5mm 5mm;
+    border-radius: 999px;
+    background: #0161AA;
+    color: #ffffff;
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .print-notice-card h1 {
+    max-width: 150mm;
+    margin: 0 auto 7mm;
+    color: #111827;
+    font-size: 22pt;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .print-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5mm;
+    max-width: 145mm;
+    margin: 0 auto 8mm;
+  }
+
+  .print-meta div {
+    padding: 4mm 5mm;
+    border: 1px solid #d9e2ec;
+    border-radius: 10mm;
+    background: #f8fafc;
+  }
+
+  .print-meta span {
+    display: block;
+    margin-bottom: 1.5mm;
+    color: #64748b;
+    font-size: 8.5pt;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .print-meta strong {
+    display: block;
+    color: #111827;
+    font-size: 11pt;
+    font-weight: 700;
+  }
+
+  .print-message-box {
+    max-width: 150mm;
+    margin: 0 auto 8mm;
+    padding: 7mm 9mm;
+    border-radius: 10mm;
+    background: #f8fafc;
+    border: 1px solid #d9e2ec;
+  }
+
+  .print-message-box p {
+    margin: 0 auto 4mm;
+    color: #374151;
+    font-size: 12pt;
+    line-height: 1.45;
+  }
+
+  .print-message-box p:last-child {
+    margin-bottom: 0;
+  }
+
+  .print-qr-panel {
+    max-width: 92mm;
+    margin: 0 auto;
+    padding: 7mm;
+    border-radius: 10mm;
+    background: #0161AA;
+    color: #ffffff;
+  }
+
+  .print-qr-heading {
+    margin: 0 0 5mm;
+    color: #ffffff;
+    font-size: 12pt;
+    font-weight: 700;
+  }
+
+  .print-qr-code {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 52mm;
+    height: 52mm;
+    margin: 0 auto 5mm;
+    padding: 3mm;
+    border-radius: 6mm;
+    background: #ffffff;
+  }
+
+  .print-qr-code canvas,
+  .print-qr-code img,
+  .print-qr-code svg {
+    width: 45mm !important;
+    height: 45mm !important;
+  }
+
+  .print-qr-note {
+    max-width: 75mm;
+    margin: 0 auto;
+    color: #eaf4ff;
+    font-size: 9pt;
+    line-height: 1.35;
+  }
+}

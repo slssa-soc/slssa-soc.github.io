@@ -1,19 +1,2546 @@
-<header class="py-3">
-    <nav class="">
-        <div class="container-xxl d-flex flex-wrap">
-            <a id="header-title" href="{{ '/' | relative_url }}" class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto h4">
-                {% if site.title-icon %}<span class="me-2">{% include icon.html icon=site.title-icon %}</span>{% endif %}
-                {{ site.title }}
-            </a>
-            <form class="ms-auto mb-3 mb-lg-0" role="search" id="search" onsubmit="site_search(); return false;">
-                <input id="site-search" class="form-control" type="search" placeholder="Search" aria-label="Search box">
-            </form>
+{% include analytics.html %}
+
+<header class="py-3 sop-site-banner">
+  <nav>
+    <div class="container-xxl d-flex flex-wrap align-items-start sop-banner-container">
+      <a id="header-title" href="{{ '/' | relative_url }}" class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto h4">
+        {% if site.title-icon %}<span class="me-2">{% include icon.html icon=site.title-icon %}</span>{% endif %}
+        {{ site.title }}
+      </a>
+
+      <form class="ms-auto mb-3 mb-lg-0 sop-header-ask-shell" role="search" id="sopHeaderAskForm">
+        <div class="sop-header-ask-row">
+          <label class="visually-hidden" for="sopHeaderQuestion">Ask the SOPs</label>
+
+          <div class="sop-header-ask-input-wrap">
+            <span class="sop-header-ask-input-icon" aria-hidden="true">
+              {% include icon.html icon="search" %}
+            </span>
+
+            <input
+              id="sopHeaderQuestion"
+              class="sop-header-ask-input"
+              type="search"
+              aria-label="Ask the SOPs"
+              autocomplete="off"
+              aria-controls="sopAskModal"
+              aria-expanded="false"
+            >
+
+            <span class="sop-header-ask-prompt-window" aria-hidden="true">
+              <span class="sop-header-ask-prompt-text" id="sopHeaderQuestionPrompt"></span>
+            </span>
+
+            <span class="sop-header-ask-beta" aria-label="Beta feature">BETA</span>
+          </div>
+
+          <button class="sop-header-ask-submit" id="sopHeaderAskSubmit" type="submit">Ask</button>
         </div>
-    </nav>
+
+        <div class="sop-header-ask-disclaimer" id="sopHeaderAskDisclaimer" role="note" hidden>
+          <span class="sop-header-ask-disclaimer-icon" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 1a3 3 0 0 0-3 3v2H4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-1V4a3 3 0 0 0-3-3ZM6 6V4a2 2 0 1 1 4 0v2H6Z"/>
+            </svg>
+          </span>
+          <span>
+            Do not enter personal information, patient details, member records, live incident details, radio logs, phone numbers, or sensitive operational tasking information.
+          </span>
+        </div>
+      </form>
+    </div>
+  </nav>
 </header>
-<script>
-    function site_search() {
-    var query = document.getElementById("site-search").value;
-    window.open("{{ '/search/index.html' | relative_url }}?q=" + encodeURIComponent(query), "_self" );
+
+<div class="sop-ask-modal" id="sopAskModal" hidden>
+  <div class="sop-ask-modal-backdrop" data-sop-ask-close></div>
+
+  <section class="sop-ask-sheet" role="dialog" aria-modal="true" aria-labelledby="ask-sops-heading">
+    <button class="sop-ask-modal-close" id="sopAskModalClose" type="button" aria-label="Close Ask the SOPs" data-sop-ask-close>×</button>
+
+    <div class="sop-ask-sheet-header">
+      <h2 id="ask-sops-heading">Ask the SOPs</h2>
+
+      <div class="sop-ask-beta-row">
+        <span class="sop-ask-beta">BETA</span>
+      </div>
+
+      <p>Get answers generated from Surf Life Saving SA Standard Operating Procedures.</p>
+    </div>
+
+    <form class="sop-ask-modal-form" id="sopAskModalForm">
+      <label class="visually-hidden" for="sopAskModalQuestion">Ask a question about the SOPs</label>
+
+      <input
+        id="sopAskModalQuestion"
+        name="question"
+        type="search"
+        autocomplete="off"
+        placeholder="What should be recorded after an incident?"
+        aria-label="Ask a question about the SOPs"
+      >
+
+      <button class="sop-ask-modal-submit" id="sopAskModalSubmit" type="submit">Ask</button>
+    </form>
+
+    <div class="sop-ask-modal-body" id="sopAskModalBody" aria-live="polite">
+      <div class="sop-ask-loading" id="sopAskLoading">
+        <span id="sopAskLoadingText">Searching SOP sections</span>
+        <span class="sop-ask-loading-dots" aria-hidden="true">
+          <span>.</span><span>.</span><span>.</span>
+        </span>
+      </div>
+
+      <article class="sop-answer" id="sopAnswer">
+        <p class="sop-answer-question" id="sopAnswerQuestion"></p>
+
+        <div class="sop-answer-card sop-answer-card-supported" id="sopAnswerCard">
+          <div class="sop-answer-card-label-row">
+            <span class="sop-answer-status-icon sop-answer-status-icon-supported" id="sopAnswerStatusIcon" aria-hidden="true">✓</span>
+            <span class="sop-answer-label sop-answer-label-supported" id="sopAnswerLabel">SOP supported answer</span>
+
+            <span class="sop-answer-tooltip-wrap" id="sopTooltipWrap">
+              <button class="sop-answer-tooltip-button" id="sopTooltipButton" type="button" aria-label="More information about this answer">i</button>
+              <span class="sop-answer-tooltip" id="sopTooltip" role="tooltip">
+                <strong>SOP supported answer</strong>
+                The assistant found SOP content that appears to directly support the answer.
+                <br><br>
+                Always check the linked SOPs for full context, related requirements, and current wording.
+              </span>
+            </span>
+          </div>
+
+          <div class="sop-answer-body" id="sopAnswerBody"></div>
+
+          <p class="sop-answer-verify">
+            Verify the answer against the linked SOPs before relying on it.
+          </p>
+        </div>
+
+        <div class="sop-answer-sources" id="sopAnswerSourcesWrap">
+          <h3>Sources</h3>
+          <div class="sop-answer-source-grid" id="sopAnswerSources"></div>
+        </div>
+
+        <div class="sop-answer-feedback" id="sopAnswerFeedback">
+          <span>Was this answer helpful?</span>
+
+          <button class="sop-feedback-button" type="button" data-feedback="useful" aria-label="Helpful">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M6.956 1.745C7.021 1.338 7.378 1 7.81 1c.476 0 .87.363.913.837.17 1.87-.138 3.262-.739 4.243h4.66c.928 0 1.61.866 1.395 1.77l-1.097 4.617C12.785 13.19 12.122 14 11.31 14H6.71c-.437 0-.858-.159-1.185-.448l-.81-.714A1.5 1.5 0 0 1 4.5 12.1V7.94c0-.346.12-.68.34-.945l1.578-1.893c.466-.56.822-1.21.99-1.92l.548-1.437z"/>
+              <path d="M1.5 7.5A1.5 1.5 0 0 1 3 6h.5v8H3a1.5 1.5 0 0 1-1.5-1.5v-5z"/>
+            </svg>
+          </button>
+
+          <button class="sop-feedback-button" type="button" data-feedback="not_useful" aria-label="Not helpful">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M6.956 14.255c.065.407.422.745.854.745.476 0 .87-.363.913-.837.17-1.87-.138-3.262-.739-4.243h4.66c.928 0 1.61-.866 1.395-1.77l-1.097-4.617C12.785 2.81 12.122 2 11.31 2H6.71c-.437 0-.858.159-1.185.448l-.81.714A1.5 1.5 0 0 0 4.5 3.9v4.16c0 .346.12.68.34.945l1.578 1.893c.466.56.822 1.21.99 1.92l.548 1.437z"/>
+              <path d="M1.5 8.5A1.5 1.5 0 0 0 3 10h.5V2H3A1.5 1.5 0 0 0 1.5 3.5v5z"/>
+            </svg>
+          </button>
+
+          <button class="sop-feedback-button" type="button" data-feedback="flag" aria-label="Flag this answer">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M14.778 3.222A.5.5 0 0 0 14.5 3H8.707l-.353-.354A.5.5 0 0 0 8 2.5H3.5v-1a.5.5 0 0 0-1 0v13a.5.5 0 0 0 1 0V9h4.793l.353.354A.5.5 0 0 0 9 9.5h5.5a.5.5 0 0 0 .447-.724l-1.236-2.472 1.236-2.472a.5.5 0 0 0-.169-.61z"/>
+            </svg>
+          </button>
+        </div>
+
+        <p class="sop-feedback-status" id="sopFeedbackStatus"></p>
+
+        <a
+          class="sop-feedback-link"
+          id="sopFeedbackLink"
+          href="https://slssa-surfcom.atlassian.net/servicedesk/customer/portal/19/group/51/create/147"
+          target="_blank"
+          rel="noopener"
+        >
+          Submit detailed feedback
+        </a>
+      </article>
+    </div>
+  </section>
+</div>
+
+<div class="sop-icon-templates" id="sopIconTemplates" hidden>
+  <span data-sop-section="1">{% include icon.html icon="shield-check" %}</span>
+  <span data-sop-section="2">{% include icon.html icon="folder" %}</span>
+  <span data-sop-section="3">{% include icon.html icon="check-circle" %}</span>
+  <span data-sop-section="4">{% include icon.html icon="card-text" %}</span>
+  <span data-sop-section="5">{% include icon.html icon="tools" %}</span>
+  <span data-sop-section="6">{% include icon.html icon="life-preserver" %}</span>
+  <span data-sop-section="7">{% include icon.html icon="broadcast" %}</span>
+  <span data-sop-section="8">{% include icon.html icon="flag" %}</span>
+  <span data-sop-section="9">{% include icon.html icon="exclamation-triangle" %}</span>
+  <span data-sop-section="10">{% include icon.html icon="cloud" %}</span>
+  <span data-sop-section="11">{% include icon.html icon="search" %}</span>
+  <span data-sop-section="12">{% include icon.html icon="headset" %}</span>
+  <span data-sop-section="13">{% include icon.html icon="phone" %}</span>
+  <span data-sop-section="14">{% include icon.html icon="compass" %}</span>
+  <span data-sop-section="15">{% include icon.html icon="people" %}</span>
+  <span data-sop-section="16">{% include icon.html icon="book" %}</span>
+  <span data-sop-section="17">{% include icon.html icon="journal-text" %}</span>
+  <span data-sop-section="18">{% include icon.html icon="clock-history" %}</span>
+  <span data-sop-section="annexes">{% include icon.html icon="paperclip" %}</span>
+  <span data-sop-section="default">{% include icon.html icon="journal-text" %}</span>
+</div>
+
+<style>
+  .visually-hidden,
+  .sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  strong,
+  b {
+    font-weight: 600;
+  }
+
+  .sop-site-banner {
+    position: relative;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  .sop-banner-container {
+    align-items: center !important;
+    row-gap: 8px;
+  }
+
+  .sop-dev-strip-wrap {
+    flex: 0 0 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 2px;
+  }
+
+  .sop-dev-strip {
+    width: fit-content;
+    max-width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 7px 11px;
+    border: 1px solid #fed7aa;
+    border-radius: 13px;
+    background: linear-gradient(180deg, #fff7ed 0%, #fffbeb 100%);
+    color: #7c2d12;
+    text-align: center;
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .sop-dev-strip strong {
+    color: #7c2d12;
+    font-weight: 650;
+  }
+
+  .sop-dev-strip-icon {
+    width: 17px;
+    height: 17px;
+    color: #c2410c;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .sop-dev-strip-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sop-header-ask-shell {
+    position: relative;
+    width: min(560px, 100%);
+  }
+
+  .sop-header-ask-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .sop-header-ask-input-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 260px;
+  }
+
+  .sop-header-ask-input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    width: 17px;
+    height: 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .sop-header-ask-input-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .sop-header-ask-input {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 74px 9px 40px;
+    border: 1px solid #d6dde7;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 0.93rem;
+    line-height: 1.25;
+    outline: none;
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+    transition:
+      border-color 0.16s ease,
+      box-shadow 0.16s ease,
+      background 0.16s ease;
+  }
+
+  .sop-header-ask-input:focus {
+    border-color: rgba(1, 97, 170, 0.48);
+    background: #ffffff;
+    box-shadow:
+      0 0 0 4px rgba(1, 97, 170, 0.10),
+      0 8px 22px rgba(15, 23, 42, 0.06);
+  }
+
+  .sop-header-ask-prompt-window {
+    position: absolute;
+    left: 40px;
+    right: 74px;
+    top: 50%;
+    height: 1.35em;
+    overflow: hidden;
+    color: #64748b;
+    font-size: 0.93rem;
+    line-height: 1.35;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .sop-header-ask-prompt-text {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .sop-header-ask-prompt-text.is-rolling-in {
+    animation: sop-header-prompt-roll-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .sop-header-ask-prompt-text.is-rolling-out {
+    animation: sop-header-prompt-roll-out 220ms cubic-bezier(0.64, 0, 0.78, 0) both;
+  }
+
+  .sop-header-ask-input-wrap.sop-header-ask-is-focused .sop-header-ask-prompt-window,
+  .sop-header-ask-input-wrap.sop-header-ask-has-value .sop-header-ask-prompt-window {
+    opacity: 0;
+  }
+
+  .sop-header-ask-beta,
+  .sop-ask-beta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 23px;
+    padding: 0 0.5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+
+  .sop-header-ask-beta {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .sop-header-ask-submit,
+  .sop-ask-modal-submit {
+    position: relative;
+    isolation: isolate;
+    overflow: visible;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 18px;
+    border: 1px solid #014f8c;
+    border-radius: 14px;
+    background: #0161AA;
+    color: #ffffff;
+    font-weight: 650;
+    font-size: 0.88rem;
+    line-height: 1.2;
+    cursor: pointer;
+    box-shadow:
+      0 8px 18px rgba(1, 97, 170, 0.16),
+      0 0 0 1px rgba(255, 255, 255, 0.22) inset;
+    transition:
+      background 0.16s ease,
+      transform 0.16s ease,
+      box-shadow 0.16s ease;
+  }
+
+  .sop-header-ask-submit {
+    flex: 0 0 auto;
+  }
+
+  .sop-ask-modal-submit {
+    min-width: 78px;
+  }
+
+  .sop-header-ask-submit::before,
+  .sop-ask-modal-submit::before {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    z-index: -1;
+    border-radius: 19px;
+    padding: 5px;
+    background:
+      radial-gradient(circle at 16% 42%, rgba(255, 183, 3, 0.95), transparent 18%),
+      radial-gradient(circle at 34% 20%, rgba(249, 115, 22, 0.95), transparent 22%),
+      radial-gradient(circle at 70% 24%, rgba(255, 255, 255, 0.85), transparent 20%),
+      radial-gradient(circle at 86% 64%, rgba(56, 189, 248, 0.95), transparent 24%),
+      radial-gradient(circle at 42% 88%, rgba(1, 97, 170, 0.95), transparent 26%),
+      linear-gradient(115deg, rgba(56, 189, 248, 0.75), rgba(249, 115, 22, 0.65), rgba(255, 255, 255, 0.45), rgba(1, 97, 170, 0.75));
+    background-size:
+      220% 220%,
+      240% 240%,
+      210% 210%,
+      230% 230%,
+      220% 220%,
+      260% 260%;
+    background-position:
+      5% 45%,
+      25% 10%,
+      70% 15%,
+      95% 65%,
+      40% 95%,
+      0% 50%;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0.9;
+    animation: sop-header-ai-border-glow 2.9s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .sop-header-ask-submit::after,
+  .sop-ask-modal-submit::after {
+    content: "";
+    position: absolute;
+    inset: -13px;
+    z-index: -2;
+    border-radius: 26px;
+    background:
+      radial-gradient(circle at 14% 44%, rgba(255, 183, 3, 0.30), transparent 24%),
+      radial-gradient(circle at 34% 22%, rgba(249, 115, 22, 0.38), transparent 28%),
+      radial-gradient(circle at 88% 66%, rgba(56, 189, 248, 0.42), transparent 32%),
+      radial-gradient(circle at 44% 90%, rgba(1, 97, 170, 0.32), transparent 34%);
+    background-size:
+      230% 230%,
+      250% 250%,
+      250% 250%,
+      240% 240%;
+    background-position:
+      5% 50%,
+      25% 15%,
+      95% 70%,
+      40% 95%;
+    filter: blur(14px);
+    opacity: 0.52;
+    animation: sop-header-ai-soft-glow 3.3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .sop-header-ask-submit:hover,
+  .sop-ask-modal-submit:hover {
+    background: #014f8c;
+    transform: translateY(-1px);
+    box-shadow:
+      0 10px 22px rgba(1, 97, 170, 0.20),
+      0 0 0 1px rgba(255, 255, 255, 0.26) inset;
+  }
+
+  .sop-header-ask-submit:disabled,
+  .sop-ask-modal-submit:disabled {
+    background: #9ca3af;
+    border-color: #9ca3af;
+    cursor: wait;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .sop-header-ask-submit:disabled::before,
+  .sop-header-ask-submit:disabled::after,
+  .sop-ask-modal-submit:disabled::before,
+  .sop-ask-modal-submit:disabled::after {
+    animation: none;
+    opacity: 0;
+  }
+
+  .sop-header-ask-disclaimer {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 1002;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid #d9e2ec;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.98);
+    color: #64748b;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  .sop-header-ask-disclaimer[hidden] {
+    display: none !important;
+  }
+
+  .sop-header-ask-disclaimer-icon {
+    width: 15px;
+    height: 15px;
+    color: #64748b;
+    flex: 0 0 auto;
+    margin-top: 1px;
+  }
+
+  .sop-header-ask-disclaimer-icon svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  body.sop-ask-modal-open {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    left: 0;
+    right: 0;
+  }
+
+  .sop-ask-modal[hidden] {
+    display: none !important;
+  }
+
+  .sop-ask-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  .sop-ask-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.16), transparent 34%),
+      rgba(15, 23, 42, 0.28);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    touch-action: none;
+  }
+
+  .sop-ask-sheet {
+    position: relative;
+    z-index: 1;
+    width: min(720px, 100%);
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    scrollbar-gutter: stable;
+    padding: 40px 34px 30px;
+    border: 1px solid rgba(203, 213, 225, 0.82);
+    border-radius: 32px;
+    background: rgba(255, 255, 255, 0.97);
+    background-clip: padding-box;
+    box-shadow:
+      0 34px 90px rgba(15, 23, 42, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  }
+
+  .sop-ask-sheet::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .sop-ask-sheet::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 26px 0;
+  }
+
+  .sop-ask-sheet::-webkit-scrollbar-thumb {
+    border: 3px solid rgba(255, 255, 255, 0.97);
+    border-radius: 999px;
+    background: rgba(100, 116, 139, 0.34);
+  }
+
+  .sop-ask-sheet::-webkit-scrollbar-thumb:hover {
+    background: rgba(71, 85, 105, 0.44);
+  }
+
+  .sop-ask-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #d9e2ec;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .sop-ask-modal-close:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+  }
+
+  .sop-ask-sheet-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .sop-ask-sheet-header h2 {
+    margin: 0 0 9px;
+    color: #0f172a;
+    font-size: 1.58rem;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+
+  .sop-ask-beta-row {
+    display: flex;
+    justify-content: center;
+    margin: -2px 0 12px;
+  }
+
+  .sop-ask-sheet-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .sop-ask-modal-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 62px;
+    padding: 0.35rem 0.45rem 0.35rem 1.35rem;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow:
+      0 12px 28px rgba(15, 23, 42, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.90);
+  }
+
+  .sop-ask-modal-form input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #0f172a;
+    font-size: 0.96rem;
+    line-height: 1.3;
+  }
+
+  .sop-ask-modal-form input::placeholder {
+    color: #334155;
+  }
+
+  .sop-ask-modal-body {
+    margin-top: 24px;
+  }
+
+  .sop-ask-loading {
+    display: none;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 18px;
+    border-radius: 18px;
+    background: #eff6ff;
+    color: #1e3a8a;
+    font-size: 0.92rem;
+    font-weight: 650;
+  }
+
+  .sop-ask-loading.is-visible {
+    display: flex;
+  }
+
+  .sop-ask-loading-dots {
+    display: inline-flex;
+    width: 28px;
+    justify-content: flex-start;
+    color: #0161AA;
+    letter-spacing: 2px;
+  }
+
+  .sop-ask-loading-dots span {
+    animation: sop-loading-dot 1.2s infinite ease-in-out;
+    opacity: 0.25;
+  }
+
+  .sop-ask-loading-dots span:nth-child(2) {
+    animation-delay: 0.18s;
+  }
+
+  .sop-ask-loading-dots span:nth-child(3) {
+    animation-delay: 0.36s;
+  }
+
+  .sop-answer {
+    display: none;
+  }
+
+  .sop-answer.is-visible {
+    display: block;
+  }
+
+  .sop-answer-question {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border-radius: 15px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .sop-answer-question strong {
+    color: #0f172a;
+  }
+
+  .sop-answer-card {
+    padding: 18px;
+    border-radius: 18px;
+    color: #1f2937;
+    font-size: 0.92rem;
+    line-height: 1.56;
+  }
+
+  .sop-answer-card-supported {
+    background: #dcfce7;
+    border: 1px solid #16a34a;
+  }
+
+  .sop-answer-card-limited {
+    background: #fef3c7;
+    border: 1px solid #d97706;
+  }
+
+  .sop-answer-card-to-be-issued {
+    background: #fef3c7;
+    border: 1px solid #d97706;
+  }
+
+  .sop-answer-card-none,
+  .sop-answer-card-unavailable {
+    background: #fee2e2;
+    border: 1px solid #dc2626;
+  }
+
+  .sop-answer-card-label-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 12px;
+    font-size: 0.86rem;
+    font-weight: 650;
+  }
+
+  .sop-answer-status-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .sop-answer-status-icon-supported {
+    border: 1px solid #15803d;
+    background: #bbf7d0;
+    color: #14532d;
+  }
+
+  .sop-answer-status-icon-limited {
+    border: 1px solid #b45309;
+    background: #fde68a;
+    color: #78350f;
+  }
+
+  .sop-answer-status-icon-to-be-issued {
+    border: 1px solid #b45309;
+    background: #fde68a;
+    color: #78350f;
+  }
+
+  .sop-answer-status-icon-none,
+  .sop-answer-status-icon-unavailable {
+    border: 1px solid #b91c1c;
+    background: #fecaca;
+    color: #7f1d1d;
+  }
+
+  .sop-answer-label-supported {
+    color: #14532d;
+  }
+
+  .sop-answer-label-limited {
+    color: #78350f;
+  }
+
+  .sop-answer-label-to-be-issued {
+    color: #78350f;
+  }
+
+  .sop-answer-label-none,
+  .sop-answer-label-unavailable {
+    color: #7f1d1d;
+  }
+
+  .sop-answer-tooltip-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .sop-answer-tooltip-button {
+    width: 24px;
+    height: 24px;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.76);
+    color: #334155;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .sop-answer-tooltip {
+    display: none;
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 8px);
+    left: 0;
+    width: min(360px, 82vw);
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    background: #ffffff;
+    color: #334155;
+    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .sop-answer-tooltip-wrap.is-open .sop-answer-tooltip {
+    display: block;
+  }
+
+  .sop-answer-tooltip strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #0f172a;
+  }
+
+  .sop-answer-body p {
+    margin: 0 0 10px;
+  }
+
+  .sop-answer-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .sop-answer-body ul,
+  .sop-answer-body ol {
+    margin: 0.4rem 0 0.6rem 1.25rem;
+    padding: 0;
+  }
+
+  .sop-answer-body li {
+    margin: 0 0 5px;
+  }
+
+  .sop-answer-body a {
+    color: #0161AA;
+    font-weight: 650;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .sop-answer-body h3 {
+    margin: 0 0 8px;
+    color: inherit;
+    font-size: 1rem;
+  }
+
+  .sop-answer-verify {
+    margin: 14px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid rgba(15, 23, 42, 0.12);
+    color: rgba(15, 23, 42, 0.76);
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .sop-answer-sources {
+    margin-top: 18px;
+  }
+
+  .sop-answer-sources h3 {
+    margin: 0 0 10px;
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 650;
+  }
+
+  .sop-answer-source-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 10px;
+  }
+
+  .sop-answer-source-card {
+    min-height: 118px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+    padding: 12px;
+    border: 1px solid rgba(203, 213, 225, 0.8);
+    border-radius: 16px;
+    background: rgba(248, 250, 252, 0.76);
+    color: #0f172a !important;
+    text-decoration: none !important;
+    transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+  }
+
+  a.sop-answer-source-card:hover {
+    transform: translateY(-1px);
+    border-color: #93c5fd;
+    background: #eff6ff;
+  }
+
+  .sop-answer-source-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    background: #e0f2fe;
+    color: #0161AA;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sop-answer-source-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .sop-answer-source-card strong {
+    margin-top: 0.3rem;
+    color: #0f172a;
+    font-size: 0.8rem;
+    font-weight: 650;
+    line-height: 1.22;
+  }
+
+  .sop-answer-source-card small {
+    color: #64748b;
+    font-size: 0.72rem;
+    line-height: 1.25;
+  }
+
+  .sop-answer-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    margin-top: 22px;
+    color: #64748b;
+    font-size: 0.82rem;
+  }
+
+  .sop-feedback-button {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .sop-feedback-button svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .sop-feedback-button:hover,
+  .sop-feedback-button.is-selected {
+    border-color: #0161AA;
+    background: #eff6ff;
+    color: #014f8c;
+  }
+
+  .sop-feedback-status {
+    display: none;
+    box-sizing: border-box;
+    width: fit-content;
+    max-width: calc(100% - 24px);
+    margin: 10px auto 0;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: #475569;
+    text-align: center;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .sop-feedback-status.is-visible {
+    display: block;
+  }
+
+  .sop-feedback-link {
+    display: none;
+    width: fit-content;
+    max-width: 100%;
+    margin: 10px auto 0;
+    padding: 9px 15px;
+    border: 1px solid #9fc5e8;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #0161AA !important;
+    font-size: 0.82rem;
+    font-weight: 650;
+    line-height: 1.2;
+    text-decoration: none !important;
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.04);
+    transition:
+      background 0.16s ease,
+      border-color 0.16s ease,
+      transform 0.16s ease,
+      box-shadow 0.16s ease;
+  }
+
+  .sop-feedback-link:hover {
+    background: #f4f9ff;
+    border-color: #0161AA;
+    color: #014f8c !important;
+    transform: translateY(-1px);
+    text-decoration: none !important;
+  }
+
+  .sop-feedback-link.is-visible {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @keyframes sop-header-prompt-roll-in {
+    from {
+      opacity: 0;
+      transform: translateY(-115%);
     }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes sop-header-prompt-roll-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(115%);
+    }
+  }
+
+  @keyframes sop-header-ai-border-glow {
+    0%,
+    100% {
+      background-position:
+        5% 45%,
+        25% 10%,
+        70% 15%,
+        95% 65%,
+        40% 95%,
+        0% 50%;
+      opacity: 0.88;
+    }
+
+    28% {
+      background-position:
+        68% 8%,
+        82% 42%,
+        26% 84%,
+        14% 24%,
+        92% 76%,
+        55% 20%;
+      opacity: 1;
+    }
+
+    58% {
+      background-position:
+        92% 74%,
+        14% 82%,
+        84% 36%,
+        46% 10%,
+        10% 46%,
+        100% 80%;
+      opacity: 0.94;
+    }
+
+    82% {
+      background-position:
+        28% 94%,
+        58% 16%,
+        12% 42%,
+        76% 92%,
+        66% 22%,
+        35% 100%;
+      opacity: 1;
+    }
+  }
+
+  @keyframes sop-header-ai-soft-glow {
+    0%,
+    100% {
+      background-position:
+        5% 50%,
+        25% 15%,
+        95% 70%,
+        40% 95%;
+      opacity: 0.46;
+      filter: blur(14px);
+    }
+
+    30% {
+      background-position:
+        70% 8%,
+        84% 44%,
+        12% 28%,
+        94% 78%;
+      opacity: 0.64;
+      filter: blur(16px);
+    }
+
+    62% {
+      background-position:
+        96% 78%,
+        12% 84%,
+        48% 12%,
+        8% 48%;
+      opacity: 0.58;
+      filter: blur(15px);
+    }
+
+    86% {
+      background-position:
+        30% 96%,
+        60% 18%,
+        78% 94%,
+        68% 24%;
+      opacity: 0.66;
+      filter: blur(17px);
+    }
+  }
+
+  @keyframes sop-loading-dot {
+    0%,
+    80%,
+    100% {
+      opacity: 0.25;
+      transform: translateY(0);
+    }
+
+    40% {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sop-header-ask-submit::before,
+    .sop-header-ask-submit::after,
+    .sop-ask-modal-submit::before,
+    .sop-ask-modal-submit::after,
+    .sop-header-ask-prompt-text,
+    .sop-ask-loading-dots span {
+      animation: none !important;
+    }
+  }
+
+  @media (max-width: 850px) {
+    .sop-header-ask-shell {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .sop-header-ask-row {
+      width: 100%;
+    }
+
+    .sop-header-ask-input-wrap {
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .sop-header-ask-row {
+      gap: 8px;
+    }
+
+    .sop-header-ask-input {
+      font-size: 16px;
+    }
+
+    .sop-header-ask-prompt-window {
+      font-size: 16px;
+    }
+
+    .sop-header-ask-submit {
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+
+    .sop-dev-strip {
+      align-items: flex-start;
+      text-align: left;
+      font-size: 0.75rem;
+      padding: 7px 9px;
+    }
+
+    .sop-ask-modal {
+      align-items: start;
+      padding:
+        calc(12px + env(safe-area-inset-top))
+        12px
+        calc(12px + env(safe-area-inset-bottom));
+    }
+
+    .sop-ask-sheet {
+      width: 100%;
+      max-height: calc(100vh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      padding: 34px 18px 22px;
+      border-radius: 24px;
+    }
+
+    .sop-ask-modal-form {
+      grid-template-columns: 1fr;
+      border-radius: 22px;
+      padding: 12px;
+    }
+
+    .sop-ask-modal-submit {
+      width: auto;
+      min-width: 112px;
+      justify-self: end;
+      padding-left: 22px;
+      padding-right: 22px;
+    }
+
+    .sop-answer-feedback {
+      flex-wrap: wrap;
+    }
+
+    .sop-feedback-status {
+      width: auto;
+      max-width: calc(100% - 24px);
+      margin-left: 12px;
+      margin-right: 12px;
+    }
+
+    .sop-feedback-link {
+      max-width: calc(100% - 24px);
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    const SOP_ASK_ENDPOINT = "https://func-sop-assistant-eph6gzhsdmbag7fn.australiasoutheast-01.azurewebsites.net/api/ask-sop";
+    const SOP_FEEDBACK_ENDPOINT = "https://func-sop-assistant-eph6gzhsdmbag7fn.australiasoutheast-01.azurewebsites.net/api/ask-sop-feedback";
+
+    function trackAskAnalytics(eventName, properties) {
+      if (
+        window.sopAnalytics &&
+        typeof window.sopAnalytics.trackEvent === "function"
+      ) {
+        window.sopAnalytics.trackEvent(eventName, properties || {});
+      }
+    }
+
+    function getSuggestedQuestionDetails(question) {
+      const index = suggestedQuestions.findIndex(function (item) {
+        return item.toLowerCase() === String(question || "").trim().toLowerCase();
+      });
+
+      return {
+        is_suggested_question: index >= 0,
+        suggestion_number: index >= 0 ? index + 1 : null
+      };
+    }
+
+    const suggestedQuestions = [
+      "What is the process for reporting a member injury?",
+      "Where should I set up the flags?",
+      "What should I do during a patrol area closure?",
+      "When should a Surf Risk Rating be completed?",
+      "What is rescue ready?",
+      "What should happen after a critical incident?",
+      "When should peer support be offered?",
+      "What should be recorded in the Operations App?",
+      "What are the procedures for helicopter landing sites?"
+    ];
+
+    const headerForm = document.getElementById("sopHeaderAskForm");
+    const headerInput = document.getElementById("sopHeaderQuestion");
+    const headerSubmit = document.getElementById("sopHeaderAskSubmit");
+    const headerInputWrap = headerInput ? headerInput.closest(".sop-header-ask-input-wrap") : null;
+    const headerPrompt = document.getElementById("sopHeaderQuestionPrompt");
+    const headerDisclaimer = document.getElementById("sopHeaderAskDisclaimer");
+
+    const modal = document.getElementById("sopAskModal");
+    const modalForm = document.getElementById("sopAskModalForm");
+    const modalInput = document.getElementById("sopAskModalQuestion");
+    const modalSubmit = document.getElementById("sopAskModalSubmit");
+    const modalCloseButtons = Array.from(document.querySelectorAll("[data-sop-ask-close]"));
+
+    const loading = document.getElementById("sopAskLoading");
+    const loadingText = document.getElementById("sopAskLoadingText");
+    const answer = document.getElementById("sopAnswer");
+    const answerCard = document.getElementById("sopAnswerCard");
+    const answerStatusIcon = document.getElementById("sopAnswerStatusIcon");
+    const answerLabel = document.getElementById("sopAnswerLabel");
+    const answerQuestion = document.getElementById("sopAnswerQuestion");
+    const answerBody = document.getElementById("sopAnswerBody");
+    const answerSources = document.getElementById("sopAnswerSources");
+    const tooltipWrap = document.getElementById("sopTooltipWrap");
+    const tooltipButton = document.getElementById("sopTooltipButton");
+    const tooltip = document.getElementById("sopTooltip");
+    const feedbackStatus = document.getElementById("sopFeedbackStatus");
+    const feedbackLink = document.getElementById("sopFeedbackLink");
+    const feedbackButtons = Array.from(document.querySelectorAll(".sop-feedback-button"));
+    const iconTemplates = document.getElementById("sopIconTemplates");
+
+    let promptQueue = [];
+    let currentPrompt = "";
+    let promptTimer = null;
+    let loadingTimer = null;
+    let lastAnswerRecord = null;
+    let modalScrollY = 0;
+    let suggestionViewTracked = false;
+
+    if (!headerForm || !headerInput || !modal || !modalForm) {
+      return;
+    }
+
+    bindHeaderEvents();
+    bindModalEvents();
+    setPromptText(getNextPrompt(), false);
+    updatePromptVisibility();
+
+    function bindHeaderEvents() {
+      headerInput.addEventListener("focus", function () {
+        showHeaderDisclaimer();
+        updatePromptVisibility();
+
+        if (!suggestionViewTracked && currentPrompt) {
+          suggestionViewTracked = true;
+
+          const suggestionIndex = suggestedQuestions.indexOf(currentPrompt);
+
+          trackAskAnalytics("ask_sops_suggestion_viewed", {
+            suggestion_number: suggestionIndex >= 0 ? suggestionIndex + 1 : null,
+            suggestion_text: currentPrompt
+          });
+        }
+      });
+
+      headerInput.addEventListener("click", function () {
+        showHeaderDisclaimer();
+        updatePromptVisibility();
+      });
+
+      headerInput.addEventListener("input", function () {
+        showHeaderDisclaimer();
+        updatePromptVisibility();
+      });
+
+      headerInput.addEventListener("blur", function () {
+        window.setTimeout(function () {
+          updatePromptVisibility();
+
+          if (!headerForm.contains(document.activeElement) && !headerInput.value.trim()) {
+            hideHeaderDisclaimer();
+          }
+        }, 140);
+      });
+
+      headerForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const question = headerInput.value.trim();
+
+        if (!question) {
+          headerInput.focus();
+          showHeaderDisclaimer();
+          return;
+        }
+
+        openAskModal(question, true);
+        askSop(question, "header");
+      });
+    }
+
+    function bindModalEvents() {
+      modalForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const question = modalInput.value.trim();
+
+        if (!question) {
+          modalInput.focus();
+          return;
+        }
+
+        headerInput.value = question;
+        askSop(question, "modal");
+      });
+
+      modalCloseButtons.forEach(function (button) {
+        button.addEventListener("click", closeAskModal);
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && !modal.hidden) {
+          closeAskModal();
+        }
+      });
+
+      tooltipButton.addEventListener("click", function () {
+        tooltipWrap.classList.toggle("is-open");
+      });
+
+      document.addEventListener("click", function (event) {
+        if (!tooltipWrap.contains(event.target)) {
+          tooltipWrap.classList.remove("is-open");
+        }
+      });
+
+      feedbackButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          const feedback = button.getAttribute("data-feedback");
+
+          feedbackButtons.forEach(function (otherButton) {
+            otherButton.classList.remove("is-selected");
+          });
+
+          button.classList.add("is-selected");
+          submitFeedback(feedback);
+        });
+      });
+    }
+
+    function showHeaderDisclaimer() {
+      headerDisclaimer.hidden = false;
+    }
+
+    function hideHeaderDisclaimer() {
+      headerDisclaimer.hidden = true;
+    }
+
+    function openAskModal(question, clearPreviousAnswer) {
+      const wasHidden = modal.hidden;
+
+      modal.hidden = false;
+
+      if (wasHidden) {
+        trackAskAnalytics("ask_sops_open", {
+          open_source: "header_submit"
+        });
+      }
+
+      if (wasHidden) {
+        modalScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        document.body.style.top = "-" + modalScrollY + "px";
+        document.body.classList.add("sop-ask-modal-open");
+      }
+
+      modalInput.value = question;
+      headerInput.setAttribute("aria-expanded", "true");
+      hideHeaderDisclaimer();
+
+      if (clearPreviousAnswer) {
+        answer.classList.remove("is-visible");
+        loading.classList.remove("is-visible");
+        resetFeedback();
+        tooltipWrap.classList.remove("is-open");
+      }
+
+      setTimeout(function () {
+        modalInput.focus();
+        modalInput.setSelectionRange(modalInput.value.length, modalInput.value.length);
+      }, 0);
+    }
+
+    function closeAskModal() {
+      modal.hidden = true;
+      document.body.classList.remove("sop-ask-modal-open");
+      document.body.style.top = "";
+      window.scrollTo(0, modalScrollY);
+      loading.classList.remove("is-visible");
+      tooltipWrap.classList.remove("is-open");
+      headerInput.setAttribute("aria-expanded", "false");
+      clearInterval(loadingTimer);
+      headerInput.focus();
+    }
+
+    async function askSop(question, submissionSource) {
+      const suggestionDetails = getSuggestedQuestionDetails(question);
+      const requestStartedAt = Date.now();
+
+      trackAskAnalytics("ask_sops_submit", {
+        submission_source: submissionSource || "unknown",
+        question_length: question.length,
+        is_suggested_question: suggestionDetails.is_suggested_question,
+        suggestion_number: suggestionDetails.suggestion_number
+      });
+
+      setLoading(true);
+      resetFeedback();
+
+      try {
+        const response = await fetch(SOP_ASK_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            question: question,
+            topK: 8,
+            includeSources: true,
+            include_inline_citations: true,
+            citation_format: "[SOP x.x]",
+            source_display: "dedupe_by_sop",
+            page_url: window.location.pathname,
+            session_id: getSessionId()
+          })
+        });
+
+        const data = await readApiResponse(response);
+
+        if (!response.ok && !getAnswerText(data)) {
+          throw new Error(data.error || data.message || "The SOP assistant returned an error.");
+        }
+
+        renderAnswer(question, data, Date.now() - requestStartedAt);
+      } catch (error) {
+        console.error("Ask the SOPs error:", error);
+        renderError(question, Date.now() - requestStartedAt);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function readApiResponse(response) {
+      const rawText = await response.text();
+
+      if (!rawText) {
+        return {};
+      }
+
+      let parsed;
+
+      try {
+        parsed = JSON.parse(rawText);
+      } catch (error) {
+        return {
+          answer: rawText
+        };
+      }
+
+      return unwrapApiResponse(parsed);
+    }
+
+    function unwrapApiResponse(value) {
+      if (!value || typeof value !== "object") {
+        return {
+          answer: String(value || "")
+        };
+      }
+
+      if (typeof value.body === "string") {
+        try {
+          return unwrapApiResponse(JSON.parse(value.body));
+        } catch (error) {
+          return {
+            answer: value.body
+          };
+        }
+      }
+
+      if (value.body && typeof value.body === "object") {
+        return unwrapApiResponse(value.body);
+      }
+
+      if (value.data && typeof value.data === "object") {
+        return unwrapApiResponse(value.data);
+      }
+
+      if (value.result && typeof value.result === "object") {
+        return unwrapApiResponse(value.result);
+      }
+
+      if (value.response && typeof value.response === "object") {
+        return unwrapApiResponse(value.response);
+      }
+
+      return value;
+    }
+
+    function renderAnswer(question, data, responseMilliseconds) {
+      const rawSources = Array.isArray(data.sources)
+        ? data.sources
+        : Array.isArray(data.source_sops)
+          ? data.source_sops
+          : Array.isArray(data.references)
+            ? data.references
+            : Array.isArray(data.citations)
+              ? data.citations
+              : [];
+
+      const sources = dedupeSources(rawSources);
+      const answerText = getAnswerText(data);
+      const status = normaliseAnswerStatus(data, answerText, sources);
+      const matchBand = getSourceMatchBand(data, sources);
+
+      lastAnswerRecord = {
+        interaction_id: data.interaction_id || data.id || data.log_id || null,
+        question: question,
+        answer: answerText,
+        sources: sources,
+        page_url: window.location.href,
+        source_match: matchBand,
+        answer_status: status
+      };
+
+      answer.classList.add("is-visible");
+      answerQuestion.innerHTML = "<strong>Question:</strong> " + escapeHtml(question);
+
+      setAnswerStatus(status, getAnswerStatusLabel(status), matchBand);
+
+      if (status === "none") {
+        answerBody.innerHTML = renderNoClearAnswer();
+      } else {
+        answerBody.innerHTML = renderAnswerMarkdown(addCitationLinks(answerText, sources));
+      }
+
+      renderSources(sources);
+
+      trackAskAnalytics("ask_sops_answer", {
+        interaction_id: lastAnswerRecord.interaction_id || "",
+        answer_status: status,
+        source_match: matchBand,
+        source_count: sources.length,
+        source_sops: sources
+          .map(function (source) {
+            return source.sopNumber || "";
+          })
+          .filter(Boolean)
+          .join(","),
+        response_ms: Number(responseMilliseconds) || 0
+      });
+    }
+
+    function renderError(question, responseMilliseconds) {
+      lastAnswerRecord = {
+        interaction_id: null,
+        question: question,
+        answer: "",
+        sources: [],
+        page_url: window.location.href,
+        source_match: "Unavailable",
+        answer_status: "unavailable"
+      };
+
+      answer.classList.add("is-visible");
+      answerQuestion.innerHTML = "<strong>Question:</strong> " + escapeHtml(question);
+      setAnswerStatus("unavailable", "Ask the SOPs unavailable", "The assistant could not be reached");
+
+      answerBody.innerHTML =
+        "<h3>Ask the SOPs is temporarily unavailable</h3>" +
+        "<p>The request reached the page, but the browser could not read a valid answer from the assistant service.</p>" +
+        "<ul>" +
+          "<li>If Azure logs show the answer was generated, check the browser console for a CORS or response-format error.</li>" +
+          "<li>Try opening the most relevant SOP section directly.</li>" +
+          "<li>Use Submit Feedback if something appears missing or unclear.</li>" +
+        "</ul>";
+
+      renderSources([]);
+
+      trackAskAnalytics("ask_sops_answer", {
+        interaction_id: "",
+        answer_status: "unavailable",
+        source_match: "Unavailable",
+        source_count: 0,
+        source_sops: "",
+        response_ms: Number(responseMilliseconds) || 0
+      });
+    }
+
+    function setLoading(isLoading) {
+      if (isLoading) {
+        loading.classList.add("is-visible");
+        answer.classList.remove("is-visible");
+        modalSubmit.disabled = true;
+        headerSubmit.disabled = true;
+        headerSubmit.textContent = "Searching";
+
+        const messages = [
+          "Searching SOP sections",
+          "Checking source matches",
+          "Preparing SOP supported answer"
+        ];
+
+        let index = 0;
+        loadingText.textContent = messages[index];
+
+        clearInterval(loadingTimer);
+        loadingTimer = setInterval(function () {
+          index = (index + 1) % messages.length;
+          loadingText.textContent = messages[index];
+        }, 1400);
+      } else {
+        loading.classList.remove("is-visible");
+        modalSubmit.disabled = false;
+        headerSubmit.disabled = false;
+        headerSubmit.textContent = "Ask";
+        clearInterval(loadingTimer);
+      }
+    }
+
+    function normaliseAnswerStatus(data, answerText, sources) {
+      const rawStatus = String(data.answer_status || data.status || "").toLowerCase();
+
+      if (rawStatus.includes("to_be_issued") || rawStatus.includes("to be issued")) {
+        return "to-be-issued";
+      }
+
+      if (rawStatus.includes("partial") || rawStatus.includes("limited")) {
+        return "limited";
+      }
+
+      if (rawStatus.includes("no_clear") || rawStatus.includes("no clear") || rawStatus.includes("none")) {
+        return "none";
+      }
+
+      if (rawStatus.includes("error") || rawStatus.includes("unavailable")) {
+        return "unavailable";
+      }
+
+      if (data.no_clear_answer === true || data.found === false || data.supported === false) {
+        return "none";
+      }
+
+      if (!answerText) {
+        return "none";
+      }
+
+      const lowerAnswer = answerText.toLowerCase();
+
+      if (
+        lowerAnswer.includes("currently listed as **to be issued**") ||
+        lowerAnswer.includes("currently listed as to be issued")
+      ) {
+        return "to-be-issued";
+      }
+
+      if (
+        lowerAnswer.includes("no clear answer") ||
+        lowerAnswer.includes("could not find") ||
+        lowerAnswer.includes("cannot find") ||
+        lowerAnswer.includes("not enough information")
+      ) {
+        return "none";
+      }
+
+      if (!sources.length) {
+        return "limited";
+      }
+
+      return "supported";
+    }
+
+    function getAnswerStatusLabel(status) {
+      if (status === "supported") {
+        return "SOP supported answer";
+      }
+
+      if (status === "limited") {
+        return "Partial SOP answer";
+      }
+
+      if (status === "to-be-issued") {
+        return "SOP To be issued";
+      }
+
+      if (status === "unavailable") {
+        return "Ask the SOPs unavailable";
+      }
+
+      return "No clear SOP answer";
+    }
+
+    function setAnswerStatus(type, label, matchBand) {
+      const statusTypes = ["supported", "limited", "to-be-issued", "none", "unavailable"];
+
+      answerLabel.textContent = label;
+
+      statusTypes.forEach(function (statusType) {
+        answerStatusIcon.classList.remove("sop-answer-status-icon-" + statusType);
+        answerLabel.classList.remove("sop-answer-label-" + statusType);
+        answerCard.classList.remove("sop-answer-card-" + statusType);
+      });
+
+      answerStatusIcon.classList.add("sop-answer-status-icon-" + type);
+      answerLabel.classList.add("sop-answer-label-" + type);
+      answerCard.classList.add("sop-answer-card-" + type);
+
+      answerStatusIcon.textContent =
+        type === "supported"
+          ? "✓"
+          : type === "to-be-issued"
+            ? "i"
+            : "!";
+
+      tooltip.innerHTML =
+        "<strong>" + escapeHtml(label) + "</strong>" +
+        getTooltipText(type, matchBand);
+    }
+
+    function getTooltipText(type, matchBand) {
+      if (type === "supported") {
+        return "The assistant found SOP content that appears to directly support the answer." +
+          "<br><br><strong>Source match: " + escapeHtml(matchBand || "Available") + "</strong>" +
+          "<br>This means the question matched one or more SOP sections used to prepare the answer." +
+          "<br><br>Always check the linked SOPs for full context, related requirements, and current wording.";
+      }
+
+      if (type === "limited") {
+        return "The assistant found some relevant SOP content, but the match may be incomplete." +
+          "<br><br>Use the linked SOPs to confirm whether the answer is suitable for your situation.";
+      }
+
+      if (type === "to-be-issued") {
+        return "The relevant SOP has been identified, but an approved procedure has not yet been published." +
+          "<br><br>Contact the State Operations Centre (SOC) for guidance.";
+      }
+
+      if (type === "unavailable") {
+        return "Ask the SOPs could not reach or read the answer service response." +
+          "<br><br>If Azure logs show an answer was generated, this is usually a browser CORS issue or an unexpected response format.";
+      }
+
+      return "The assistant could not find SOP content that clearly answers the question." +
+        "<br><br>Try rewording the question, browsing the SOP sections, or submitting feedback if the SOPs should cover this topic.";
+    }
+
+    function getAnswerText(data) {
+      const candidates = [
+        data.answer,
+        data.answer_text,
+        data.response,
+        data.message,
+        data.text,
+        data.output,
+        data.content
+      ];
+
+      for (let i = 0; i < candidates.length; i += 1) {
+        if (typeof candidates[i] === "string" && candidates[i].trim()) {
+          return candidates[i].trim();
+        }
+      }
+
+      if (typeof data.result === "string" && data.result.trim()) {
+        return data.result.trim();
+      }
+
+      return "";
+    }
+
+    function getSourceMatchBand(data, sources) {
+      const explicitBand = data.source_match ||
+        data.source_match_band ||
+        data.match_band ||
+        data.confidence_band;
+
+      if (explicitBand) {
+        return String(explicitBand);
+      }
+
+      const bestScore = getBestSourceScore(data, sources);
+
+      if (bestScore === null) {
+        return sources.length ? "Available" : "No clear SOP source found";
+      }
+
+      if (bestScore >= 0.62) {
+        return "Strong";
+      }
+
+      if (bestScore >= 0.42) {
+        return "Moderate";
+      }
+
+      return "Limited";
+    }
+
+    function getBestSourceScore(data, sources) {
+      const scores = [];
+
+      if (typeof data.score === "number") {
+        scores.push(data.score);
+      }
+
+      if (typeof data.best_score === "number") {
+        scores.push(data.best_score);
+      }
+
+      if (typeof data.top_source_score === "number") {
+        scores.push(data.top_source_score);
+      }
+
+      sources.forEach(function (source) {
+        if (typeof source.score === "number") {
+          scores.push(source.score);
+        }
+      });
+
+      if (!scores.length) {
+        return null;
+      }
+
+      return Math.max.apply(null, scores);
+    }
+
+    function dedupeSources(rawSources) {
+      const seen = new Map();
+
+      rawSources.forEach(function (source) {
+        const normalised = normaliseSource(source);
+
+        const key = normalised.sopNumber
+          ? "sop:" + normalised.sopNumber
+          : normalised.url
+            ? "url:" + normalised.url
+            : "title:" + normalised.title.toLowerCase();
+
+        if (!seen.has(key)) {
+          seen.set(key, normalised);
+          return;
+        }
+
+        const existing = seen.get(key);
+
+        if (!existing.url && normalised.url) {
+          existing.url = normalised.url;
+        }
+
+        if (!existing.title && normalised.title) {
+          existing.title = normalised.title;
+        }
+
+        if (normalised.score && (!existing.score || normalised.score > existing.score)) {
+          existing.score = normalised.score;
+        }
+      });
+
+      return Array.from(seen.values()).sort(function (a, b) {
+        return compareSopNumbers(a.sopNumber, b.sopNumber);
+      });
+    }
+
+    function normaliseSource(source) {
+      const rawTitle = String(
+        source.title ||
+        source.sop_title ||
+        source.document_title ||
+        source.heading ||
+        source.name ||
+        source.file ||
+        "SOP source"
+      ).trim();
+
+      const sopNumber = extractSopNumber(
+        source.sop_number ||
+        source.sop ||
+        source.section ||
+        source.section_id ||
+        rawTitle ||
+        source.url ||
+        source.href ||
+        ""
+      );
+
+      return {
+        sopNumber: sopNumber,
+        title: removeTrailingSubheading(rawTitle),
+        url: normaliseUrl(source.url || source.href || source.path || source.page_url || ""),
+        score: typeof source.score === "number" ? source.score : null
+      };
+    }
+
+    function renderSources(sources) {
+      answerSources.innerHTML = "";
+
+      if (!sources.length) {
+        const card = document.createElement("div");
+        card.className = "sop-answer-source-card";
+        card.innerHTML =
+          '<span class="sop-answer-source-icon">' + getSourceIconMarkup({ sopNumber: "" }) + '</span>' +
+          '<strong>No source SOPs identified</strong>' +
+          '<small>Try rewording the question</small>';
+        answerSources.appendChild(card);
+        return;
+      }
+
+      sources.forEach(function (source) {
+        answerSources.appendChild(createSourceCard(source));
+      });
+    }
+
+    function createSourceCard(source) {
+      const card = document.createElement(source.url ? "a" : "div");
+      const label = source.sopNumber ? "SOP " + source.sopNumber : "SOP source";
+      const title = cleanSourceTitle(source.title, source.sopNumber);
+
+      card.className = "sop-answer-source-card";
+
+      if (source.url) {
+        card.href = source.url;
+
+        card.addEventListener("click", function () {
+          trackAskAnalytics("ask_sops_source_click", {
+            interaction_id:
+              lastAnswerRecord && lastAnswerRecord.interaction_id
+                ? lastAnswerRecord.interaction_id
+                : "",
+            answer_status:
+              lastAnswerRecord && lastAnswerRecord.answer_status
+                ? lastAnswerRecord.answer_status
+                : "",
+            source_sop: source.sopNumber || "",
+            source_title: title,
+            source_url: source.url
+          });
+        });
+      }
+
+      card.innerHTML =
+        '<span class="sop-answer-source-icon">' + getSourceIconMarkup(source) + '</span>' +
+        '<strong>' + escapeHtml(title) + '</strong>' +
+        '<small>' + escapeHtml(label) + '</small>';
+
+      return card;
+    }
+
+    function getSourceIconMarkup(source) {
+      const sectionKey = getSourceSectionKey(source);
+      const template = iconTemplates
+        ? iconTemplates.querySelector('[data-sop-section="' + sectionKey + '"]') || iconTemplates.querySelector('[data-sop-section="default"]')
+        : null;
+
+      return template ? template.innerHTML : "";
+    }
+
+    function getSourceSectionKey(source) {
+      if (source.sopNumber) {
+        return source.sopNumber.split(".")[0];
+      }
+
+      const text = String(source.title || source.url || "").toLowerCase();
+
+      if (text.includes("annex")) {
+        return "annexes";
+      }
+
+      const match = text.match(/\b(\d{1,2})[\.-]/);
+
+      if (match) {
+        return match[1];
+      }
+
+      return "default";
+    }
+
+    function addCitationLinks(answerText, sources) {
+      return String(answerText || "").replace(/\[SOP\s+(\d{1,2}(?:\.\d{1,2}){1,2})\]/gi, function (match, sopNumber) {
+        const source = sources.find(function (item) {
+          return item.sopNumber === sopNumber;
+        });
+
+        if (source && source.url) {
+          return "[SOP " + sopNumber + "](" + source.url + ")";
+        }
+
+        return "[SOP " + sopNumber + "]";
+      });
+    }
+
+    function renderAnswerMarkdown(markdown) {
+      const lines = String(markdown || "").replace(/\r\n/g, "\n").split("\n");
+      const html = [];
+      let inList = false;
+      let listType = "";
+
+      lines.forEach(function (line) {
+        const trimmed = line.trim();
+
+        if (!trimmed) {
+          closeListIfNeeded();
+          return;
+        }
+
+        const headingMatch = trimmed.match(/^#{1,3}\s+(.+)$/);
+        const unorderedMatch = trimmed.match(/^[-*]\s+(.+)$/);
+        const orderedMatch = trimmed.match(/^\d+\.\s+(.+)$/);
+
+        if (headingMatch) {
+          closeListIfNeeded();
+          html.push("<h3>" + renderInlineMarkdown(headingMatch[1]) + "</h3>");
+          return;
+        }
+
+        if (unorderedMatch) {
+          openListIfNeeded("ul");
+          html.push("<li>" + renderInlineMarkdown(unorderedMatch[1]) + "</li>");
+          return;
+        }
+
+        if (orderedMatch) {
+          openListIfNeeded("ol");
+          html.push("<li>" + renderInlineMarkdown(orderedMatch[1]) + "</li>");
+          return;
+        }
+
+        closeListIfNeeded();
+        html.push("<p>" + renderInlineMarkdown(trimmed) + "</p>");
+      });
+
+      closeListIfNeeded();
+
+      return html.join("");
+
+      function openListIfNeeded(type) {
+        if (inList && listType === type) {
+          return;
+        }
+
+        closeListIfNeeded();
+        html.push("<" + type + ">");
+        inList = true;
+        listType = type;
+      }
+
+      function closeListIfNeeded() {
+        if (inList) {
+          html.push("</" + listType + ">");
+          inList = false;
+          listType = "";
+        }
+      }
+    }
+
+    function renderInlineMarkdown(text) {
+      let html = escapeHtml(text);
+
+      html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+      html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (match, label, url) {
+        const safeUrl = sanitiseLinkUrl(url);
+
+        if (!safeUrl) {
+          return label;
+        }
+
+        return '<a href="' + safeUrl + '">' + label + "</a>";
+      });
+
+      return html;
+    }
+
+    function renderNoClearAnswer() {
+      return "<h3>No clear SOP answer found</h3>" +
+        "<p>I could not find a current SOP that directly answers the question.</p>" +
+        "<ul>" +
+          "<li>Try rewording the question with different terms.</li>" +
+          "<li>Browse the SOP sections.</li>" +
+          "<li>Check the Change Log if you are looking for a recent update.</li>" +
+          "<li>Submit feedback if this should be covered by an SOP.</li>" +
+        "</ul>";
+    }
+
+    async function submitFeedback(feedback) {
+      if (!lastAnswerRecord) {
+        return;
+      }
+
+      feedbackStatus.textContent = "Saving feedback...";
+      feedbackStatus.classList.add("is-visible");
+
+      if (feedbackLink) {
+        feedbackLink.classList.add("is-visible");
+      }
+
+      try {
+        const response = await fetch(SOP_FEEDBACK_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            interaction_id: lastAnswerRecord.interaction_id,
+            feedback: feedback,
+            question: lastAnswerRecord.question,
+            answer: lastAnswerRecord.answer,
+            sources: lastAnswerRecord.sources,
+            page_url: lastAnswerRecord.page_url,
+            source_match: lastAnswerRecord.source_match,
+            answer_status: lastAnswerRecord.answer_status,
+            no_clear_answer: lastAnswerRecord.answer_status === "none",
+            feedback_time: new Date().toISOString()
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Feedback could not be saved.");
+        }
+
+        feedbackStatus.textContent = "Feedback saved. Thank you.";
+
+        trackAskAnalytics("ask_sops_feedback", {
+          interaction_id: lastAnswerRecord.interaction_id || "",
+          feedback: feedback,
+          answer_status: lastAnswerRecord.answer_status || ""
+        });
+      } catch (error) {
+        feedbackStatus.textContent = "Feedback could not be saved. Use Submit detailed feedback if this needs review.";
+      }
+    }
+
+    function resetFeedback() {
+      feedbackButtons.forEach(function (button) {
+        button.classList.remove("is-selected");
+      });
+
+      feedbackStatus.textContent = "";
+      feedbackStatus.classList.remove("is-visible");
+
+      if (feedbackLink) {
+        feedbackLink.classList.remove("is-visible");
+      }
+    }
+
+    function startPromptRotation() {
+      if (promptTimer) {
+        return;
+      }
+
+      promptTimer = setInterval(advancePrompt, 3000);
+    }
+
+    function stopPromptRotation() {
+      if (!promptTimer) {
+        return;
+      }
+
+      clearInterval(promptTimer);
+      promptTimer = null;
+    }
+
+    function advancePrompt() {
+      if (document.activeElement === headerInput || headerInput.value.trim()) {
+        return;
+      }
+
+      setPromptText(getNextPrompt(), true);
+    }
+
+    function getNextPrompt() {
+      if (promptQueue.length === 0) {
+        promptQueue = shufflePrompts(suggestedQuestions);
+
+        if (promptQueue.length > 1 && promptQueue[0] === currentPrompt) {
+          const first = promptQueue.shift();
+          promptQueue.push(first);
+        }
+      }
+
+      currentPrompt = promptQueue.shift();
+      return currentPrompt;
+    }
+
+    function shufflePrompts(items) {
+      const shuffled = items.slice();
+
+      for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = shuffled[i];
+        shuffled[i] = shuffled[j];
+        shuffled[j] = temp;
+      }
+
+      return shuffled;
+    }
+
+    function setPromptText(text, animate) {
+      if (!headerPrompt) {
+        return;
+      }
+
+      if (!animate || prefersReducedMotion()) {
+        headerPrompt.classList.remove("is-rolling-in", "is-rolling-out");
+        headerPrompt.textContent = text;
+        return;
+      }
+
+      headerPrompt.classList.remove("is-rolling-in");
+      headerPrompt.classList.add("is-rolling-out");
+
+      setTimeout(function () {
+        headerPrompt.textContent = text;
+        headerPrompt.classList.remove("is-rolling-out");
+        headerPrompt.classList.add("is-rolling-in");
+
+        setTimeout(function () {
+          headerPrompt.classList.remove("is-rolling-in");
+        }, 280);
+      }, 220);
+    }
+
+    function updatePromptVisibility() {
+      const isFocused = document.activeElement === headerInput;
+      const hasValue = Boolean(headerInput.value.trim());
+
+      headerInputWrap.classList.toggle("sop-header-ask-is-focused", isFocused);
+      headerInputWrap.classList.toggle("sop-header-ask-has-value", hasValue);
+
+      if (isFocused || hasValue) {
+        stopPromptRotation();
+      } else {
+        startPromptRotation();
+      }
+    }
+
+    function prefersReducedMotion() {
+      return window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+
+    function removeTrailingSubheading(title) {
+      return String(title)
+        .replace(/\s+[—–-]\s+(Purpose|Procedure|Policy|Scope|Responsibilities|References|Definitions|Notes|Overview).*$/i, "")
+        .trim();
+    }
+
+    function cleanSourceTitle(title, sopNumber) {
+      let text = String(title || "SOP source").trim();
+
+      if (sopNumber) {
+        text = text.replace(new RegExp("^SOP\\s*" + escapeRegExp(sopNumber) + "\\s*[—–-]?\\s*", "i"), "");
+        text = text.replace(new RegExp("^" + escapeRegExp(sopNumber) + "\\s*[—–-]?\\s*", "i"), "");
+      }
+
+      return text || "SOP source";
+    }
+
+    function extractSopNumber(value) {
+      const text = String(value || "");
+      const match = text.match(/\b(\d{1,2}(?:\.\d{1,2}){1,2})\b/);
+      return match ? match[1] : "";
+    }
+
+    function normaliseUrl(url) {
+      if (!url) {
+        return "";
+      }
+
+      const text = String(url).trim();
+
+      if (/^https?:\/\//i.test(text)) {
+        return text;
+      }
+
+      if (text.startsWith("/")) {
+        return "{{ site.baseurl }}" + text;
+      }
+
+      return "{{ site.baseurl }}/" + text;
+    }
+
+    function sanitiseLinkUrl(url) {
+      const text = String(url || "").trim();
+
+      if (/^https?:\/\//i.test(text)) {
+        return escapeAttribute(text);
+      }
+
+      if (text.startsWith("/") || text.startsWith("{{ site.baseurl }}/")) {
+        return escapeAttribute(text);
+      }
+
+      return "";
+    }
+
+    function compareSopNumbers(a, b) {
+      if (!a && !b) {
+        return 0;
+      }
+
+      if (!a) {
+        return 1;
+      }
+
+      if (!b) {
+        return -1;
+      }
+
+      const aParts = a.split(".").map(Number);
+      const bParts = b.split(".").map(Number);
+      const length = Math.max(aParts.length, bParts.length);
+
+      for (let i = 0; i < length; i += 1) {
+        const aValue = aParts[i] || 0;
+        const bValue = bParts[i] || 0;
+
+        if (aValue !== bValue) {
+          return aValue - bValue;
+        }
+      }
+
+      return 0;
+    }
+
+    function getSessionId() {
+      if (
+        window.sopAnalytics &&
+        typeof window.sopAnalytics.getSessionId === "function"
+      ) {
+        return window.sopAnalytics.getSessionId();
+      }
+
+      const key = "sop_ask_session_id";
+      let sessionId = window.sessionStorage.getItem(key);
+
+      if (!sessionId) {
+        sessionId = "sop-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+        window.sessionStorage.setItem(key, sessionId);
+      }
+
+      return sessionId;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/`/g, "&#096;");
+    }
+
+    function escapeRegExp(value) {
+      return String(value || "").replace(/[.*+?^$(){}|[\]\\]/g, "\\$&");
+    }
+  })();
 </script>
