@@ -23,6 +23,10 @@ function lunr_search () {
   var query = searchbox.value;//.toLowerCase();
   /* basic search that supports operators */
   var result = idx.search(query); 
+  // Record completed keyword searches; never send the question to a public dashboard.
+  if (query.trim() && window.sopAnalytics) {
+    window.sopAnalytics.trackEvent('site_search', { search_term: query.trim().slice(0, 300), result_count: result.length });
+  }
   /* more fuzzy search, but doesn't support operators:
   var result =
     idx.query(function (q) {
