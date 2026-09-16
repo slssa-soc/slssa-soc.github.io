@@ -1,13 +1,13 @@
 ---
 layout: null
 ---
-{"generated_at":{{ site.time | date_to_xmlschema | jsonify }},"pages":[
+{"revision":{{ site.github.build_revision | jsonify }},"generated_at":{{ site.time | date_to_xmlschema | jsonify }},"pages":[
 {%- assign first_sop = true -%}
 {%- assign sop_pages = site.pages | sort: 'path' -%}
 {%- for sop in sop_pages -%}
 {%- if sop.layout == 'lesson-content' and sop.published != false -%}
 {%- unless first_sop -%},{%- endunless -%}
-{"path":{{ sop.path | jsonify }},"url":{{ sop.url | absolute_url | jsonify }},"title":{{ sop.title | jsonify }},"section":{{ sop.section | default: sop.sop_section | default: sop.number | jsonify }},"keywords":{{ sop.keywords | jsonify }},"tags":{{ sop.tags | jsonify }},"content":{{ sop.content | jsonify }}}
+{"path":{{ sop.path | jsonify }},"url":{{ sop.url | absolute_url | jsonify }},"title":{{ sop.title | jsonify }},"section":{{ sop.section | default: sop.sop_section | default: sop.number | jsonify }},"keywords":{{ sop.keywords | jsonify }},"tags":{{ sop.tags | jsonify }}}
 {%- assign first_sop = false -%}
 {%- endif -%}
 {%- endfor -%}
