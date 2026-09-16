@@ -5,7 +5,8 @@ layout: null
 {%- assign first_sop = true -%}
 {%- assign sop_pages = site.pages | sort: 'path' -%}
 {%- for sop in sop_pages -%}
-{%- if sop.layout == 'lesson-content' and sop.published != false -%}
+{%- assign extension = sop.path | split: '.' | last -%}
+{%- if sop.layout == 'lesson-content' and sop.published != false and extension == 'md' -%}
 {%- unless first_sop -%},{%- endunless -%}
 {"path":{{ sop.path | jsonify }},"url":{{ sop.url | absolute_url | jsonify }},"title":{{ sop.title | jsonify }},"section":{{ sop.section | default: sop.sop_section | default: sop.number | jsonify }},"keywords":{{ sop.keywords | jsonify }},"tags":{{ sop.tags | jsonify }}}
 {%- assign first_sop = false -%}
