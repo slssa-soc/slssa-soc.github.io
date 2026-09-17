@@ -1700,6 +1700,7 @@
 
       lastAnswerRecord = {
         interaction_id: data.interaction_id || data.id || data.log_id || null,
+        feedback_token: data.feedback_token || "",
         question: question,
         answer: answerText,
         sources: sources,
@@ -2287,14 +2288,8 @@
           body: JSON.stringify({
             interaction_id: lastAnswerRecord.interaction_id,
             feedback: feedback,
-            question: lastAnswerRecord.question,
-            answer: lastAnswerRecord.answer,
-            sources: lastAnswerRecord.sources,
-            page_url: lastAnswerRecord.page_url,
-            source_match: lastAnswerRecord.source_match,
-            answer_status: lastAnswerRecord.answer_status,
-            no_clear_answer: lastAnswerRecord.answer_status === "none",
-            feedback_time: new Date().toISOString()
+            feedback_token: lastAnswerRecord.feedback_token || "",
+            session_id: getSessionId()
           })
         });
 
